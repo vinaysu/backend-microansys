@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const FormDataModel = require('./model');
+const path = require('path'); // Import path module
 
 
 const app = express();
@@ -49,6 +50,16 @@ app.get('/api/list', async (req, res) => {
         console.error('Error fetching list data:', error);
         res.status(500).json({ error: 'Failed to fetch list data' });
     }
+});
+
+
+
+const reactAppPath = path.join(__dirname, '../frontend-microansys/build');
+
+app.use(express.static(reactAppPath));
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(reactAppPath, 'index.html'));
 });
 
 
