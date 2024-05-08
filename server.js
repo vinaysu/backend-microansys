@@ -54,7 +54,7 @@ app.get('/api/list', async (req, res) => {
 
 
 
-const reactAppPath = path.join(__dirname, '..\frontend-microansys\public');
+const reactAppPath = path.join(__dirname, '../frontend-microansys\public');
 
 app.use(express.static(reactAppPath));
 
