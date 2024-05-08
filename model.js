@@ -5,7 +5,7 @@ const FormDataSchema = new mongoose.Schema({
     enquirerType: { type: String, required: true },
     enquirerName: { type: String, required: true },
     enquirerMobile: { type: String, required: true },
-    enquirerWhatsapp: { type: String, required: true },
+    enquirerWhatsapp: { type: String },
     productEnquired: { type: String, required: true },
     studentsClass: { type: String, required: true },
     studentsBoard: { type: String, required: true },
