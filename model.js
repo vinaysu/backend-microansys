@@ -10,7 +10,8 @@ const FormDataSchema = new mongoose.Schema({
     studentsClass: { type: String, required: true },
     studentsBoard: { type: String, required: true },
     studentName: { type: String, required: true },
-    enquiredDate: { type: Date, default: Date.now } 
+    enquiredDate: { type: Date, default: Date.now } ,
+    enquirySource:{ type: String, required: true },
 });
 
 // Create a model based on the schema
