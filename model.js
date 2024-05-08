@@ -9,6 +9,7 @@ const FormDataSchema = new mongoose.Schema({
     productEnquired: { type: String, required: true },
     studentsClass: { type: String, required: true },
     studentsBoard: { type: String, required: true },
+    studentName: { type: String, required: true },
 });
 
 // Create a model based on the schema
