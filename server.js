@@ -29,7 +29,7 @@ mongoose
 
 
 // Serve static files from the 'build' directory
-const path = require("path");
+
 
 // Serve static files from the 'frontend-microansys/build' directory
 app.use(express.static(path.join(__dirname, 'frontend-microansys', 'build')));
