@@ -27,13 +27,7 @@ mongoose
     console.error("Error connecting to MongoDB:", error.message);
   });
 
-// Serve static files from the 'build' directory
-app.use(express.static(path.join(__dirname, 'build')));
 
-// Handle all other routes by serving the 'index.html'
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
 
 
 app.post("/api/formdata", async (req, res) => {
