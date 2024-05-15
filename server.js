@@ -90,7 +90,7 @@ app.post("/sendOTP", async (req, res) => {
     res.json({ message: "OTP sent successfully" });
   } catch (error) {
     console.error("Error sending OTP at server side :", error);
-    res.status(500).json({ message: "Failed to send OTP at server side " });
+    res.status(500).json({ message: error });
   }
 });
 
