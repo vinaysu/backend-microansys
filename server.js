@@ -2,7 +2,16 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const FormDataModel = require("./model");
+const OtpModel = require("./otpModel");
 const path = require("path");
+const twilio = require("twilio");
+
+require("dotenv").config();
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+const twilioNumber = process.env.TWILIO_PHONE_NUMBER;
+const twilioClient = twilio(accountSid, authToken);
 
 const app = express();
 
@@ -54,6 +63,58 @@ app.get("/api/list", async (req, res) => {
   } catch (error) {
     console.error("Error fetching list data:", error);
     res.status(500).json({ error: "Failed to fetch list data" });
+  }
+});
+
+const otpDatabase = {};
+
+app.post("/sendOTP", async (req, res) => {
+  const { mobileNumber } = req.body;
+
+  try {
+    // Generate random 4-digit OTP
+    const otp = Math.floor(1000 + Math.random() * 9000);
+
+    // Save OTP to the database
+    const otpData = new OtpModel({
+      mobileNumber: mobileNumber,
+      otp: otp.toString(), // Convert OTP to string before saving
+    });
+    await otpData.save();
+
+    // Send OTP via Twilio
+    await twilioClient.messages.create({
+      body: `Your OTP is ${otp}`,
+      from: twilioNumber,
+      to: `+91${mobileNumber}`, // Assuming mobileNumber is in Indian format
+    });
+
+    res.json({ message: "OTP sent successfully" });
+  } catch (error) {
+    console.error("Error sending OTP:", error);
+    res.status(500).json({ message: "Failed to send OTP" });
+  }
+});
+
+// Route to verify OTP
+app.post("/verifyOTP", async (req, res) => {
+  const { mobileNumber, otp } = req.body;
+
+  try {
+    // Retrieve OTP from database
+    const storedOTP = otpDatabase[mobileNumber];
+
+    // Validate OTP
+    if (storedOTP && otp === storedOTP) {
+      // Remove OTP from database after successful verification
+      delete otpDatabase[mobileNumber];
+      res.json({ message: "OTP verified successfully" });
+    } else {
+      res.status(400).json({ message: "Invalid OTP" });
+    }
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    res.status(500).json({ message: "Failed to verify OTP" });
   }
 });
 
