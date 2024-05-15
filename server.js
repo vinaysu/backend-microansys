@@ -66,8 +66,6 @@ app.get("/api/list", async (req, res) => {
   }
 });
 
-const otpDatabase = {};
-
 app.post("/sendOTP", async (req, res) => {
   const { mobileNumber } = req.body;
 
@@ -101,13 +99,13 @@ app.post("/verifyOTP", async (req, res) => {
   const { mobileNumber, otp } = req.body;
 
   try {
-    // Retrieve OTP from database
-    const storedOTP = otpDatabase[mobileNumber];
+    // Retrieve OTP from the database
+    const otpData = await OtpModel.findOne({ mobileNumber });
 
     // Validate OTP
-    if (storedOTP && otp === storedOTP) {
-      // Remove OTP from database after successful verification
-      delete otpDatabase[mobileNumber];
+    if (otpData && otp === otpData.otp) {
+      // Remove OTP from the database after successful verification
+      await OtpModel.deleteOne({ mobileNumber });
       res.json({ message: "OTP verified successfully" });
     } else {
       res.status(400).json({ message: "Invalid OTP" });
