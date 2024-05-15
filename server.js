@@ -74,12 +74,21 @@ app.post("/sendOTP", async (req, res) => {
     // Generate random 4-digit OTP
     const otp = Math.floor(1000 + Math.random() * 9000);
 
-    // Save OTP to the database
-    const otpData = new OtpModel({
-      mobileNumber: mobileNumber,
-      otp: otp.toString(), // Convert OTP to string before saving
-    });
-    await otpData.save();
+    // Check if there is an existing OTP for the same mobile number
+    let existingOtpData = await OtpModel.findOne({ mobileNumber }).sort({ createdAt: -1 });
+
+    if (existingOtpData) {
+      // Update the existing OTP with the newly generated one
+      existingOtpData.otp = otp.toString();
+      await existingOtpData.save();
+    } else {
+      // Save the OTP to the database
+      const otpData = new OtpModel({
+        mobileNumber: mobileNumber,
+        otp: otp.toString(), // Convert OTP to string before saving
+      });
+      await otpData.save();
+    }
 
     // Send OTP via Twilio
     await twilioClient.messages.create({
@@ -94,6 +103,7 @@ app.post("/sendOTP", async (req, res) => {
     res.status(500).json({ message: error });
   }
 });
+
 
 // Route to verify OTP
 app.post("/verifyOTP", async (req, res) => {
